@@ -2,7 +2,7 @@
 
 ## The team
 
-- Foo bar: email1
-- bar bar: email2
+- Hassan KESKIN: hassan.keskin@icloud.com
+- Hakan KESKIN: hakan.keskin@icloud.com
 
 ## Comments
