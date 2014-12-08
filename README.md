@@ -61,9 +61,9 @@ This first scheduler aims only at discovering the CloudSim API. This scheduler s
 1. Just create the new class handling the scheduling, integrate it into `VmAllocationPolicyFactory`. Your class must extends `VmAllocationPolicy`. The flag to call this scheduler for the command line interface (CLI) will be "naive". Test if the integration is correct. The code shall crash in your class but that is expected at this stage.
 2. Implements the easy part first, that is to indicate where a Vm runs. This is done by the `getHost(Vm)` and the `getHost(int, int)` methods
 
-3. Implements `allocateHostForVm`, the method to force a given `Vm` to be hosted on a given `Host`. For doing so, look at the method `Host.vmCreate(Vm)`.
+3. The 2 `allocateHostForVm` are the core of the Vm scheduler. One of the 2 methods will be executed directly by the simulator each time a Vm is submitted. In these methods, you are in charge of compute the most appropriate host for each Vm. Implementing `allocateHostForVm(Vm, Host)` is straighforward as the host is forced. To allocate the Vm on a host look at the method `Host.vmCreate(Vm)`. It allocates and returns true iff the host as sufficient free resources. The method `getHostList` from `VmAllocationPolicy` allows to get the datacenter nodes. Track the way you want the host used to host that Vm.
 
-4. Implements `deallocateHostForVm`, the method that remove a running `Vm` from its hosting node.
+4. Implements `deallocateHostForVm`, the method that remove a running `Vm` from its hosting node. Find the host that is running your Vm and use `Host.vmDestroy()` to kill it.
 
 5. The scheduler is static. `optimizeAllocation` must returns `null`
 
@@ -79,7 +79,7 @@ Let consider the VMs run replicated applications. To make them fault-tolerant to
 
 1. Implement a new scheduler (flag `antiAffinity`) that place the Vms with regards to their affinity. In practice, all Vms with an id between [0-99] must be on distinct nodes, the same with Vms having an id between [100-199], [200-299], ... .
 
-2. To check the scheduler is effective, implements an observer. A sample one is `PeakPowerObserver`. Basically, your observer must be called every simulated second to confirm Vms of a same group are hosted on distinct nodes. If this constraint is violated, then the observer must reports the co-located Vms. If needed, modify your scheduler or use the naive one to exhibit the correctness of the observer.
+2. To check the scheduler is effective, implements an observer. A sample one is `PeakPowerObserver`. Basically, your observer must be called every simulated second to confirm Vms of a same group are hosted on distinct nodes. If this constraint is violated, then the observer must reports the co-located Vms. If needed, modify your scheduler or use the naive one to exhibit the correctness of the observer. The core method to implement is the `processEvent` method. Aside `startEntity` must be implemented as well to bootstrap the observation loop.
 
 ### Balance the load
 
