@@ -15,10 +15,16 @@ public class antiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     //To track the Host for each Vm. The string is the unique Vm identifier, composed by its id and its userId
     private Map<String, Host> vmTable;
+    private int currentVMGroup;
+    private int previewVMGroup;
+    private int antiAffinityCounter;
 
     public antiAffinityVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         vmTable = new HashMap<>();
+        antiAffinityCounter = 0;
+        currentVMGroup =0;
+        previewVMGroup =0;
     }
 
     public Host getHost(Vm vm) {
@@ -42,12 +48,61 @@ public class antiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     public boolean allocateHostForVm(Vm vm) {
         //First fit algorithm, run on the first suitable node
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for (Host h : getHostList()) {
-            if (h.vmCreate(vm)) {
-                //track the host
-                vmTable.put(vm.getUid(), h);
-                return true;
+            currentVMGroup = vm.getId()/100;
+            System.out.println("previewVMGroup: "+previewVMGroup+" currentVMGroup: "+currentVMGroup);
+            System.out.println("vm ID: " + vm.getId() + " h id: " + h.getId());
+            if(vmTable.isEmpty()){
+                if (h.vmCreate(vm)) {
+                    //track the host
+                    vmTable.put(vm.getUid(), h);
+                    previewVMGroup = 0;
+                    System.out.println("Id Vm : "+vm.getId());
+                    return true;
+                }
+            }else{
+                if(h.getVmList().size()==0){
+                    if (h.vmCreate(vm)) {
+                        System.out.println("Creation de la vm"+vm.getId()+" dans le host"+h.getId());
+                        //track the host
+                        vmTable.put(vm.getUid(), h);
+                        previewVMGroup = currentVMGroup;
+                        antiAffinityCounter =0;
+                        return true;
+                    }else{
+                        System.out.println("... mais host saturee");
+                    }
+                }else {
+                    for (int i = 0; i < h.getVmList().size(); i++) {
+                        Vm vmInCurrentHost = h.getVmList().get(i);
+                        if (vmInCurrentHost.getId() / 100 != currentVMGroup) {
+                            antiAffinityCounter++;
+                        }
+                    }
+                    if (antiAffinityCounter == h.getVmList().size()) {
+                        System.out.println("antiAffinityCounter OK");
+                        if (h.vmCreate(vm)) {
+                            System.out.println("Creation de la vm" + vm.getId() + " dans le host" + h.getId());
+                            //track the host
+                            vmTable.put(vm.getUid(), h);
+                            previewVMGroup = currentVMGroup;
+                            antiAffinityCounter = 0;
+                            return true;
+                        } else {
+                            System.out.println("... mais host saturee deja "+h.getVmList()+" vm sur le host");
+                        }
+                    } else {
+                        antiAffinityCounter = 0;
+                    }
+                }
+
             }
+
         }
         return false;
     }
