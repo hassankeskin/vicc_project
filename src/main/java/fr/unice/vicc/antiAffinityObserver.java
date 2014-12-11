@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Created by hassankeskin on 08/12/14.
+ * @author Hassan KESKIN
  */
 
 public class antiAffinityObserver extends SimEntity{
