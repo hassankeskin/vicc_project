@@ -12,14 +12,14 @@ import java.util.Map;
  * Created by hassankeskin on 08/12/14.
  * @author Hassan KESKIN
  */
-public class antiAffinityVmAllocationPolicy extends VmAllocationPolicy {
+public class AntiAffinityVmAllocationPolicy extends VmAllocationPolicy {
 
     //To track the Host for each Vm. The string is the unique Vm identifier, composed by its id and its userId
     private Map<String, Host> vmTable;
     private int currentVMGroup;
     private boolean antiAffinity;
 
-    public antiAffinityVmAllocationPolicy(List<? extends Host> list) {
+    public AntiAffinityVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         vmTable = new HashMap<>();
         antiAffinity = true;

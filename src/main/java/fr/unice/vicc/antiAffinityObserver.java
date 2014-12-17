@@ -1,6 +1,9 @@
 package fr.unice.vicc;
 
 import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerHost;
@@ -12,39 +15,32 @@ import java.util.List;
  * @author Hassan KESKIN
  */
 
-public class antiAffinityObserver extends SimEntity{
+public class AntiAffinityObserver extends SimEntity{
     /** The custom event id, must be unique. */
     public static final int OBSERVE = 555555;
 
     private List<PowerHost> hosts;
 
-    private double peak;
-
     private float delay;
 
     public static final float DEFAULT_DELAY = 1;
 
-    public antiAffinityObserver(List<PowerHost> hosts) {
-        this(hosts, DEFAULT_DELAY);
-    }
-
-    public antiAffinityObserver(List<PowerHost> hosts, float delay) {
+    public AntiAffinityObserver(List<PowerHost> hosts) {
         super("antiAffinityObserver");
-        this.hosts = hosts;
-        this.delay = delay;
+        this.hosts=hosts;
     }
 
-
-    /**
-     * Get the datacenter instantaneous power.
-     * @return a number in Watts
-     */
-    private double getPower() {
-        double p = 0;
-        for (PowerHost h : hosts) {
-            p += h.getPower();
+    private void antiAffinityCheck(){
+        for(Host h : hosts) {
+            for (Vm v : h.getVmList()) {
+                int currentVmGroup = v.getId() / 100;
+                for (Vm v2 : h.getVmList()) {
+                    if (currentVmGroup == v2.getId() / 100 && v != v2) {
+                        System.out.println("La vm" + v + " et la vm" + v2 + " sont dans le meme host");
+                    }
+                }
+            }
         }
-        return p;
     }
 
     /*
@@ -59,22 +55,12 @@ public class antiAffinityObserver extends SimEntity{
         switch(ev.getTag()) {
             case OBSERVE: //It is my custom event
                 //I must observe the datacenter
-                double cur = getPower();
-                if (cur > peak) {
-                    peak = cur;
-                }
+                antiAffinityCheck();
                 //Observation loop, re-observe in `delay` seconds
                 send(this.getId(), delay, OBSERVE, null);
         }
     }
 
-    /**
-     * Get the peak power consumption.
-     * @return a number of Watts
-     */
-    public double getPeak() {
-        return peak;
-    }
 
     @Override
     public void shutdownEntity() {
