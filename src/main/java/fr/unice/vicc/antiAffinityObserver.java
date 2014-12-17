@@ -20,7 +20,6 @@ public class AntiAffinityObserver extends SimEntity{
     public static final int OBSERVE = 555555;
 
     private List<PowerHost> hosts;
-    //test changement de noms de classes
     private float delay;
 
     public static final float DEFAULT_DELAY = 1;
