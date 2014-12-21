@@ -21,3 +21,22 @@ Afin de réaliser cela au niveau code, nous avons déclarer un booleen `antiAffi
 On attribue donc la valeur `true` à l'allocation de la vm seulement si la variable `antiAffinity`=`true` et si la vm s'est bien créer dans l'host courant.
 
 * AntiAffinity Observer
+
+###Balance the load
+
+* Balance load Scheduller
+
+On reprent la même structure que les autres Class (`AntiAffinityVmAllocationPolicy` et `BalanceLoadVmAllocationPolicy` ).
+Pour ce scheduller (`balanceLoad`) le point important est d'implémenter l'équillibrage de charge. Pour ce faire, en suivant vos conseils, nous avons choisie de creer un scheduleur qui va placer les vm sur une hôte ayant le meilleure MIPS (`meilleureHote`).
+Les premieres vm seront placé sur les Hôtes ayant le plus gros MIPS et ainsi de suite. Nous aurons au final une repartition des charges equilibrée.
+Concretement, dans une boucle `for` parcourant la liste d'Hote, nous gardons dans la variable `meilleureHote` l'Hote ayant le MIPS max (le meilleure MIPS etant stocké dans la variable `meilleureMips` ).
+
+
+* Balance load Observer
+
+Nous reprenons la même trame que l'Observer du PeakPower. Comme "ID" de l'atribut `OBSERVE` nous avons choisie "555556".
+comme vous nous l'avez expliqué, pour calculer le taux de MIPS moyen disponible, nous prenons le MIPS de l'Hote ayant le MIPS le plus grand `mipsMaximum` et nous la soustrayons au MIPS le plus petit `mipsMinimum`.
+Cette difference est stocker dans la variable `mipsRange`.
+Le taux (`ctauxMips`) est calculer avec un systeme en croix:
+ - `ctauxMips` =  (`mipsRange`/`mipsMinimum`)*100
+ Ce taux est donc calculé toute les secondes.
