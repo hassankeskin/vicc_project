@@ -43,7 +43,7 @@ public class AntiAffinityObserver extends SimEntity{
                 for (int j=i; j<h.getVmList().size(); j++ ) {
                     Vm v2=h.getVmList().get(j);
                     if (currentVmGroup == v2.getId() / 100) {
-                        Log.printLine("La vm" + v.getId() + " et la vm" + v2.getId() + " sont dans le meme host Host :"+h.getId());
+                        Log.printLine("antiAffinityObserver Log: La vm" + v.getId() + " et la vm" + v2.getId() + " sont dans le meme host Host :"+h.getId());
                     }
                 }
             }
