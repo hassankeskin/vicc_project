@@ -46,7 +46,6 @@ public class NaiveVmAllocationPolicy extends VmAllocationPolicy {
             if (h.vmCreate(vm)) {
                 //track the host
                 vmTable.put(vm.getUid(), h);
-                //System.out.println("Vm no: "+vm.getId()+" dans Hote no: "+h.getId()+" avec " + h.getAvailableMips() +" Mips");
                 return true;
             }
         }
