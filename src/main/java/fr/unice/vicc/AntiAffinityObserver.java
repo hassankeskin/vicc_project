@@ -35,7 +35,7 @@ public class AntiAffinityObserver extends SimEntity{
 
     private void antiAffinityCheck(){
         for(Host h : hosts) {
-            System.out.println( h.getVmList());
+
             int i=0;
             for (Vm v : h.getVmList()) {
                 i=i+1;
@@ -43,7 +43,7 @@ public class AntiAffinityObserver extends SimEntity{
                 for (int j=i; j<h.getVmList().size(); j++ ) {
                     Vm v2=h.getVmList().get(j);
                     if (currentVmGroup == v2.getId() / 100) {
-                        System.out.println("La vm" + v + " et la vm" + v2 + " sont dans le meme host");
+                        Log.printLine("La vm" + v.getId() + " et la vm" + v2.getId() + " sont dans le meme host Host :"+h.getId());
                     }
                 }
             }
