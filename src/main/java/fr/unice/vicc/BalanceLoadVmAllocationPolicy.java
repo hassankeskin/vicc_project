@@ -16,14 +16,10 @@ import java.util.Map;
 public class BalanceLoadVmAllocationPolicy extends VmAllocationPolicy{
     //To track the Host for each Vm. The string is the unique Vm identifier, composed by its id and its userId
     private Map<String, Host> vmTable;
-    private int currentVMGroup;
-    private boolean antiAffinity;
 
     public BalanceLoadVmAllocationPolicy(List<? extends Host> list) {
         super(list);
         vmTable = new HashMap<>();
-        antiAffinity = true;
-        currentVMGroup =0;
     }
 
     public Host getHost(Vm vm) {
@@ -46,20 +42,24 @@ public class BalanceLoadVmAllocationPolicy extends VmAllocationPolicy{
     }
 
     public boolean allocateHostForVm(Vm vm) {
-        for (Host h : getHostList()) {
-            currentVMGroup = vm.getId()/100;
-            for (Vm v : h.getVmList()) {
-                if (v.getId() / 100 == currentVMGroup) {
-                    antiAffinity = false;
+
+        Host meilleureHote = null;
+        double meilleureMips = 0;
+
+            for (Host cH : getHostList()) {
+                double mipsCourant = cH.getAvailableMips();
+                if(mipsCourant > meilleureMips){
+                    meilleureHote = cH;
+                    meilleureMips = mipsCourant;
+
                 }
+
             }
-            if (antiAffinity && h.vmCreate(vm)) {
-                vmTable.put(vm.getUid(), h);
+            if (meilleureHote.vmCreate(vm)) {
+                vmTable.put(vm.getUid(), meilleureHote);
+                System.out.println("Vm no: "+vm.getId()+" dans Hote no: "+meilleureHote.getId()+" avec " + meilleureMips +" Mips");
                 return true;
-            }else{
-                antiAffinity=true;
             }
-        }
         return false;
     }
 
