@@ -16,7 +16,6 @@ public class Observers{
      * Build all the observers.
      */
     public void build(List<PowerHost> hosts) {
-        //AntiAffinityObserver antiAffinityObserver = new AntiAffinityObserver(hosts);
-        BalanceLoadObserver balanceLoadObserver = new BalanceLoadObserver(hosts);
+        AntiAffinityObserver antiAffinityObserver = new AntiAffinityObserver(hosts);
     }
 }
