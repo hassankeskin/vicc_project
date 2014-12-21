@@ -50,7 +50,7 @@ Le taux (`ctauxMips`) est calculer avec un systeme en croix:
  - `ctauxMips` =  (`mipsRange`/`mipsMinimum`)*100
  Ce taux est donc calculé toute les secondes.
  
- ###Get rid of SLA violations
+###Get rid of SLA violations
 
 * noViolations Scheduller
 
