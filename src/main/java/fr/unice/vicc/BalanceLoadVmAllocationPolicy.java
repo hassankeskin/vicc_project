@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
 /**
  * Created by hakankeskin on 17/12/14.
  */
@@ -46,18 +43,15 @@ public class BalanceLoadVmAllocationPolicy extends VmAllocationPolicy{
         Host meilleureHote = null;
         double meilleureMips = 0;
 
-            for (Host cH : getHostList()) {
-                double mipsCourant = cH.getAvailableMips();
+            for (Host h : getHostList()) {
+                double mipsCourant = h.getAvailableMips();
                 if(mipsCourant > meilleureMips){
-                    meilleureHote = cH;
+                    meilleureHote = h;
                     meilleureMips = mipsCourant;
-
                 }
-
             }
             if (meilleureHote.vmCreate(vm)) {
                 vmTable.put(vm.getUid(), meilleureHote);
-                System.out.println("Vm no: "+vm.getId()+" dans Hote no: "+meilleureHote.getId()+" avec " + meilleureMips +" Mips");
                 return true;
             }
         return false;
@@ -83,5 +77,4 @@ public class BalanceLoadVmAllocationPolicy extends VmAllocationPolicy{
         //Static scheduling, no migration, return null;
         return null;
     }
-
 }
