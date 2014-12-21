@@ -22,6 +22,15 @@ On attribue donc la valeur `true` à l'allocation de la vm seulement si la varia
 
 * AntiAffinity Observer
 
+Pour l'Observer le point important est de parcourir tout les hosts et de comparer entre elles chaque VMs. 
+Afin de faire des test pour le fonctionnement nous avons fait appel au scheduller de base (`naive`) pour la création des VMs.
+
+Pour la création de la classe, nous nous sommes basés sur `PeakPowerObserver`. L'objet pour cette classe était instancié dans le Main mais nous avons préferé d'instancier l'objet `AntiAffinityObserver` dans la classe dédié au "build" des observers.
+Le builder (de la classe `Observers.java`) n'étant surement pas encore testé, il manquait le parametre `List<PowerHost>`  permettant de faire passer la listes des hosts en parametre lors de l'instanciation du builder dans le Main. 
+Nous avons donc ajouté ce dernier dans la methode `build` de la class `Observers.java`.
+
+Concernant le code de l'observer, nous parcouront tous les hosts et comparont les VMs entre elles. Si 2 Vms appartenant au même groupe est detecté, nous envoyons un erreur dans le fichier Log.
+
 ###Balance the load
 
 * Balance load Scheduller
@@ -40,3 +49,10 @@ Cette difference est stocker dans la variable `mipsRange`.
 Le taux (`ctauxMips`) est calculer avec un systeme en croix:
  - `ctauxMips` =  (`mipsRange`/`mipsMinimum`)*100
  Ce taux est donc calculé toute les secondes.
+ 
+ ###Get rid of SLA violations
+
+* noViolations Scheduller
+
+Pour ce scheduller (`noViolations`) le but est de coder un scheduller créant de VMs de tel sorte à ne pas avoir un limitation de MIPS coté hosts lorsque la VMs demande des MIPS.
+Pour cela il a suffit de créer la VM, seulement sur des hosts dont le MIPS restant est supérrieur à la VM que nous voulons allouer.
