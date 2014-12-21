@@ -3,7 +3,6 @@ package fr.unice.vicc;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.power.PowerHost;
@@ -20,22 +19,30 @@ public class AntiAffinityObserver extends SimEntity{
     public static final int OBSERVE = 555555;
 
     private List<PowerHost> hosts;
-
     private float delay;
 
     public static final float DEFAULT_DELAY = 1;
 
     public AntiAffinityObserver(List<PowerHost> hosts) {
+        this(hosts, DEFAULT_DELAY);
+    }
+
+    public AntiAffinityObserver(List<PowerHost> hosts, float delay) {
         super("antiAffinityObserver");
         this.hosts=hosts;
+        this.delay=delay;
     }
 
     private void antiAffinityCheck(){
         for(Host h : hosts) {
+            System.out.println( h.getVmList());
+            int i=0;
             for (Vm v : h.getVmList()) {
+                i=i+1;
                 int currentVmGroup = v.getId() / 100;
-                for (Vm v2 : h.getVmList()) {
-                    if (currentVmGroup == v2.getId() / 100 && v != v2) {
+                for (int j=i; j<h.getVmList().size(); j++ ) {
+                    Vm v2=h.getVmList().get(j);
+                    if (currentVmGroup == v2.getId() / 100) {
                         System.out.println("La vm" + v + " et la vm" + v2 + " sont dans le meme host");
                     }
                 }
@@ -73,10 +80,5 @@ public class AntiAffinityObserver extends SimEntity{
         //I send to myself an event that will be processed in `delay` second by the method
         //`processEvent`
         send(this.getId(), delay, OBSERVE, null);
-    }
-
-    @Override
-    public int getId() {
-        return OBSERVE;
     }
 }
